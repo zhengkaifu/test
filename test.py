@@ -8,11 +8,8 @@ from augment import (img_augment, sample_img_augment_params, AugmentedInput,
                       SupervisedAugmentedInput)
 from util import img_transform
 import joblib
-
-def imgs(self):
-    for i in range(self.n_imgs):
-        yield self._img(i)
-def _img(self, idx):
+import os
+def _img(idx):
     img_path = os.path.join("./", '%.6d.jpg' % (idx+1))
     return np.array(Image.open(img_path))
 def _resize(args):
@@ -47,10 +44,10 @@ if __name__ == '__main__':
 	# image2 = image2.convert('L')
  #        image2.save('aa.jpg')
     def img_iter():
-        for i in range(n_imgs):
-            yield _img(img_idxs[i % len(img_idxs)])
-    with joblib.Parallel(n_jobs=-2) as parallel:
-        imgs = parallel(joblib.delayed(_resize_augment)
-                        ((img, 64, (40, 218-30, 15, 178-15))) for img in img_iter())
+        for i in range(2):
+            yield _img(i)
+    parallel = joblib.Parallel(n_jobs=-2)
+    imgs = parallel(joblib.delayed(_resize_augment)
+                    ((img, 64, (40, 218-30, 15, 178-15))) for img in img_iter())
     imgs = np.array(imgs)
-    print imgs
+    print imgs.shape
